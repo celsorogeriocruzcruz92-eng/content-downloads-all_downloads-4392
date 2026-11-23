@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071522">
+<title>CELSO CRUZ AI BAC BO</title>
+<style>
+:root{--bg:#071522;--panel:#102538;--panel2:#153149;--line:#24445c;--txt:#edf5fb;--muted:#9bb0c1;--blue:#3987ff;--red:#f05252;--orange:#f2a33a;--green:#36c98b}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#071522,#0b2031 55%,#071522);color:var(--txt);font:15px system-ui,-apple-system,Segoe UI,sans-serif;padding:env(safe-area-inset-top) 12px calc(20px + env(safe-area-inset-bottom));max-width:650px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 2px}
+h1{font-size:20px;line-height:1.15;margin:0;font-weight:850;letter-spacing:.3px}header small{color:var(--muted)}.wallet{text-align:right;color:var(--muted);font-size:12px}.wallet b{display:block;color:var(--txt);font-size:21px}
+.panel{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:14px;margin:12px 0;box-shadow:0 8px 22px #0003}
+h2{font-size:15px;margin:0 0 12px}.arena{display:grid;grid-template-columns:1fr 1fr;gap:10px}.side{text-align:center;padding:12px 6px;border:2px solid var(--line);border-radius:15px}.side.p{color:var(--blue)}.side.b{color:var(--red)}.side.win{border-color:currentColor;background:#ffffff0d}.side strong{display:block;font-size:13px;margin-bottom:8px}
+.dice{display:flex;justify-content:center;gap:7px}.die{width:43px;height:43px;border-radius:9px;background:#f8fafc;color:#111;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:6px;box-shadow:0 3px 0 #0005}.pip{border-radius:50%;width:7px;height:7px;align-self:center;justify-self:center;background:transparent}.pip.on{background:#111}.total{font-size:32px;font-weight:850;color:var(--txt);margin-top:6px}.result{text-align:center;min-height:24px;margin:12px 0 0;font-weight:650}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}.chips,.bets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.bets{grid-template-columns:repeat(3,1fr)}
+button,input,select,textarea{font:inherit}button{touch-action:manipulation;cursor:pointer;border:1px solid var(--line);border-radius:12px;padding:12px 8px;background:#18354c;color:var(--txt);font-weight:700}button:active{transform:scale(.98)}button:disabled{opacity:.45;cursor:not-allowed}
+.chip.selected{outline:2px solid white;background:#31516a}.bet{background:#102538}.bet.p{border-color:var(--blue);color:#8bb7ff}.bet.b{border-color:var(--red);color:#ff9292}.bet.t{border-color:var(--orange);color:#ffc36d}.bet em{display:block;font-style:normal;font-size:17px;min-height:22px;margin-top:4px}
+.primary{background:var(--green);color:#062116;border:0}.secondary{background:#203d54}.danger{background:#552d36;border-color:#82404b}.muted{color:var(--muted);font-size:12px}
+label{display:block;color:var(--muted);font-size:12px}input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:#091b2a;color:var(--txt);margin-top:5px}textarea{min-height:76px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.signal{font-size:21px;font-weight:850;text-align:center;padding:12px;border-radius:12px;background:#091b2a}.signal.p{color:#8bb7ff}.signal.b{color:#ff9292}.signal.t{color:#ffc36d}.signal.none{color:var(--muted)}
+.bars{display:grid;gap:8px}.barline{display:grid;grid-template-columns:76px 1fr 36px;gap:8px;align-items:center;font-size:12px}.track{height:9px;background:#071522;border-radius:9px;overflow:hidden}.fill{height:100%;border-radius:9px}.fill.p{background:var(--blue)}.fill.b{background:var(--red)}.fill.t{background:var(--orange)}
+.history{display:flex;flex-wrap:wrap;gap:6px}.history span{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;color:white}.history .P{background:var(--blue)}.history .B{background:var(--red)}.history .T{background:var(--orange)}
+.notice{font-size:11px;line-height:1.5;color:var(--muted)}.toggle{display:flex;align-items:center;gap:8px}.toggle input{width:auto;margin:0}
+@media(min-width:520px){body{padding-left:18px;padding-right:18px}.die{width:50px;height:50px}}
+</style>
+</head>
+<body>
+<header><div><h1>CELSO CRUZ AI<br>BAC BO</h1><small>Painel Android • Simulador e análise</small></div><div class="wallet">Fichas virtuais<b id="balance">1 000</b></div></header>
+
+<section class="panel">
+ <div class="arena">
+  <div class="side p" id="sideP"><strong>JOGADOR</strong><div class="dice"><div class="die" id="p1"></div><div class="die" id="p2"></div></div><div class="total" id="sumP">–</div></div>
+  <div class="side b" id="sideB"><strong>BANQUEIRO</strong><div class="dice"><div class="die" id="b1"></div><div class="die" id="b2"></div></div><div class="total" id="sumB">–</div></div>
+ </div>
+ <div class="result" id="message" aria-live="polite">Escolhe uma ficha e faz uma simulação.</div>
+</section>
+
+<section class="panel">
+ <h2>Fichas e apostas virtuais</h2>
+ <div class="chips" id="chips">
+  <button class="chip selected" data-chip="10">10</button><button class="chip" data-chip="50">50</button><button class="chip" data-chip="100">100</button><button class="chip" data-chip="500">500</button>
+ </div>
+ <div class="bets">
+  <button class="bet p" data-bet="P">Jogador<small>1:1</small><em id="betP">—</em></button>
+  <button class="bet t" data-bet="T">Empate<small>8:1</small><em id="betT">—</em></button>
+  <button class="bet b" data-bet="B">Banqueiro<small>1:1</small><em id="betB">—</em></button>
+ </div>
+ <div class="row"><button class="secondary" id="clear">Limpar</button><button class="primary" id="roll">Lançar dados</button></div>
+</section>
+
+<section class="panel">
+ <h2>Análise de resultados</h2>
+ <div class="signal none" id="signal">Aguardando resultados</div>
+ <p class="muted" id="signalNote">A análise descreve o histórico; não prevê o próximo resultado.</p>
+ <div class="bars">
+  <div class="barline"><span>Jogador</span><div class="track"><div class="fill p" id="barP"></div></div><b id="pctP">0%</b></div>
+  <div class="barline"><span>Banqueiro</span><div class="track"><div class="fill b" id="barB"></div></div><b id="pctB">0%</b></div>
+  <div class="barline"><span>Empate</span><div class="track"><div class="fill t" id="barT"></div></div><b id="pctT">0%</b></div>
+ </div>
+ <p class="muted" id="counts">0 rodadas registadas</p>
+</section>
+
+<section class="panel">
+ <h2>Registar resultado manualmente</h2>
+ <p class="muted">Usa esta opção para registar o resultado que observaste noutra plataforma.</p>
+ <div class="row"><button class="bet p" id="manualP">Jogador</button><button class="bet b" id="manualB">Banqueiro</button><button class="bet t" id="manualT">Empate</button></div>
+</section>
+
+<section class="panel">
+ <h2>Modo automático de simulação</h2>
+ <div class="grid2">
+  <label>Intervalo (segundos)<select id="speed"><option value="3">3 segundos</option><option value="5" selected>5 segundos</option><option value="10">10 segundos</option></select></label>
+  <label>Limite de rodadas<input id="limit" type="number" min="1" max="500" value="20"></label>
+ </div>
+ <div class="row" style="margin-top:10px"><button class="primary" id="auto">Iniciar automático</button><button class="danger" id="stop" disabled>Parar</button></div>
+ <p class="muted" id="autoStatus">O automático lança dados apenas neste simulador.</p>
+</section>
+
+<section class="panel">
+ <div class="row" style="align-items:center"><h2 style="flex:1;margin:0">Histórico recente</h2><button class="secondary" id="undo" style="flex:0 0 auto">Desfazer</button><button class="danger" id="reset" style="flex:0 0 auto">Apagar</button></div>
+ <div class="history" id="history" style="margin-top:12px"></div>
+</section>
+<p class="notice">Aviso: este ficheiro é um simulador independente. Não está ligado à Elephant Bet, não lê o iframe do casino e não coloca apostas reais. Resultados do Bac Bo são aleatórios e cada ronda é independente; sequências anteriores não garantem o resultado seguinte. Usa apenas fichas virtuais.</p>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const faces={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+let balance=1000,chip=10,bets={P:0,B:0,T:0},history=[],counts={P:0,B:0,T:0},busy=false,autoTimer=null,autoRounds=0;
+function face(el,n){el.innerHTML=Array.from({length:9},(_,i)=>`<i class="pip ${faces[n].includes(i)?'on':''}"></i>`).join('')}
+['p1','p2','b1','b2'].forEach(id=>face($(id),1));
+function fmt(n){return Math.floor(n).toLocaleString('pt-PT')}
+function update(){
+ $('balance').textContent=fmt(balance);
+ ['P','T','B'].forEach(k=>$('bet'+k).textContent=bets[k]?fmt(bets[k]):'—');
+ $('roll').disabled=busy||!(bets.P+bets.B+bets.T);
+ $('clear').disabled=busy||!(bets.P+bets.B+bets.T);
+ const total=history.length;
+ ['P','B','T'].forEach(k=>{let pct=total?Math.round(counts[k]/total*100):0;$('pct'+k).textContent=pct+'%';$('bar'+k).style.width=pct+'%'});
+ $('counts').textContent=`${total} rodadas | Jogador ${counts.P} | Banqueiro ${counts.B} | Empate ${counts.T}`;
+ $('history').innerHTML=history.slice(-60).map(r=>`<span class="${r}">${r==='P'?'J':r==='B'?'B':'E'}</span>`).join('');
+ const recent=history.slice(-20),n=recent.length;
+ let leader='—',max=0;
+ ['P','B','T'].forEach(k=>{const c=recent.filter(x=>x===k).length;if(c>max){max=c;leader=k}});
+ const names={P:'JOGADOR',B:'BANQUEIRO',T:'EMPATE'};
+ $('signal').textContent=n?`Mais frequente nas últimas ${n}: ${names[leader]}`:'Aguardando resultados';
+ $('signal').className='signal '+(n?leader.toLowerCase():'none');
+ $('signalNote').textContent=n?`${max} de ${n} resultados (${Math.round(max/n*100)}%). É uma estatística descritiva, não uma previsão.`:'Regista resultados para ver as frequências.';
+}
+function place(k){if(busy)return;if(chip>balance){$('message').textContent='Saldo de fichas insuficiente.';return}bets[k]+=chip;balance-=chip;update()}
+document.querySelectorAll('[data-chip]').forEach(btn=>btn.addEventListener('click',()=>{chip=+btn.dataset.chip;document.querySelectorAll('[data-chip]').forEach(x=>x.classList.toggle('selected',x===btn))}));
+document.querySelectorAll('[data-bet]').forEach(btn=>btn.addEventListener('click',()=>place(btn.dataset.bet)));
+$('clear').onclick=()=>{balance+=bets.P+bets.B+bets.T;bets={P:0,B:0,T:0};update()};
+function record(r){history.push(r);counts[r]++;update()}
+function finishRound(v,settle=true){
+ const p=v[0]+v[1],b=v[2]+v[3],r=p>b?'P':b>p?'B':'T';
+ ['p1','p2','b1','b2'].forEach((id,i)=>face($(id),v[i]));
+ $('sumP').textContent=p;$('sumB').textContent=b;
+ $('sideP').classList.toggle('win',r==='P');$('sideB').classList.toggle('win',r==='B');
+ record(r);
+ if(settle){
+  let payout=r==='T'?bets.T*9+bets.P+bets.B:bets[r]*2;
+  const stake=bets.P+bets.B+bets.T;balance+=payout;
+  const net=payout-stake;
+  $('message').textContent=`${r==='P'?'Jogador':r==='B'?'Banqueiro':'Empate'} (${p} x ${b}) • ${net>=0?'ganho':'perda'} líquido: ${fmt(Math.abs(net))} fichas.`;
+  bets={P:0,B:0,T:0};
+ }else $('message').textContent=`Resultado registado: ${r==='P'?'Jogador':r==='B'?'Banqueiro':'Empate'} (${p} x ${b}).`;
+ update();
+}
+function roll(){
+ if(busy)return;
+ busy=true;update();$('message').textContent='Dados a lançar…';
+ const ids=['p1','p2','b1','b2'];let ticks=0;
+ const iv=setInterval(()=>{ids.forEach(id=>face($(id),1+Math.floor(Math.random()*6)));if(++ticks>10){clearInterval(iv);busy=false;finishRound(ids.map(()=>1+Math.floor(Math.random()*6)));afterRound()}},90);
+}
+$('roll').onclick=roll;
+function afterRound(){if(autoTimer!==null){autoRounds++;const max=Math.max(1,Math.min(500,+$('limit').value||20));if(autoRounds>=max){stopAuto();$('autoStatus').textContent=`Simulação concluída: ${autoRounds} rodadas.`}}}
+function manual(r){if(busy)return;finishRound(r==='P'?[6,1,1,1]:r==='B'?[1,1,6,1]:[3,3,2,4],false);$('message').textContent=`Resultado ${r==='P'?'Jogador':r==='B'?'Banqueiro':'Empate'} adicionado ao histórico (sem dados reais).`}
+$('manualP').onclick=()=>manual('P');$('manualB').onclick=()=>manual('B');$('manualT').onclick=()=>manual('T');
+function stopAuto(){if(autoTimer!==null)clearTimeout(autoTimer);autoTimer=null;$('auto').disabled=false;$('stop').disabled=true}
+$('auto').onclick=()=>{if(autoTimer!==null||busy)return;autoRounds=0;$('auto').disabled=true;$('stop').disabled=false;$('autoStatus').textContent='Simulação automática em execução…';const step=()=>{if(autoTimer===null)return;roll();autoTimer=setTimeout(step,Math.max(3,+$('speed').value||5)*1000)};autoTimer=setTimeout(step,250)};
+$('stop').onclick=()=>{stopAuto();$('autoStatus').textContent='Simulação parada pelo utilizador.'};
+$('undo').onclick=()=>{const r=history.pop();if(r)counts[r]--;update();$('message').textContent='Último resultado removido do histórico.'};
+$('reset').onclick=()=>{stopAuto();history=[];counts={P:0,B:0,T:0};bets={P:0,B:0,T:0};balance=1000;$('sumP').textContent='–';$('sumB').textContent='–';$('sideP').classList.remove('win');$('sideB').classList.remove('win');$('message').textContent='Histórico e fichas reiniciados.';update()};
+update();
+</script>
+</body>
+</html>
